@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Set
 
 import requests
@@ -9,8 +10,23 @@ from github_issue_prompter.types import Issue, IssueComment
 logger = logging.getLogger(__name__)
 
 
-class GitHubError(Exception):
+class GitHubGraphQLError(Exception):
     pass
+
+
+def _parse_datetime(_datetime: str) -> datetime:
+    """
+    Parse a GraphQL datetime string (in ISO-8601 format).
+
+    Parameters
+    ----------
+    _datetime : str
+
+    Returns
+    -------
+    datetime
+    """
+    return datetime.strptime(_datetime, "%Y-%m-%dT%H:%M:%SZ")
 
 
 def query_graphql(
@@ -34,7 +50,7 @@ def query_graphql(
     """
     logger.debug("Querying GitHub GraphQL: %s", query)
     response = requests.post(
-        "https://api.github.com/graphql",
+        url="https://api.github.com/graphql",
         json={"query": query},
         headers={
             "Authorization": f"Bearer {token}",
@@ -43,8 +59,8 @@ def query_graphql(
         timeout=timeout,
     )
 
-    if response.status_code != 200:
-        raise GitHubError(
+    if response.status_code not in [200, 201]:
+        raise GitHubGraphQLError(
             f"GitHub GraphQL query failed to run, returning code: {response.status_code}. "
             f"Query: {query}"
         )
@@ -52,7 +68,7 @@ def query_graphql(
     data = response.json()
 
     if "errors" in data and len(data["errors"]) > 0:
-        raise GitHubError(
+        raise GitHubGraphQLError(
             f"GitHub GraphQL query returned errors: {data['errors']}. Query: {query}"
         )
 
@@ -61,7 +77,7 @@ def query_graphql(
 
 
 def get_repository_list(
-    owner: str,
+    organisation: str,
     token: str,
 ) -> List[str]:
     """
@@ -69,7 +85,7 @@ def get_repository_list(
 
     Parameters
     ----------
-    owner : str
+    organisation : str
     token : str
 
     Returns
@@ -77,7 +93,10 @@ def get_repository_list(
     List[str]
         The list of owned repositories.
     """
-    logger.debug("Querying GitHub GraphQL API for %s's repositories.", owner)
+    logger.debug(
+        "Querying GitHub GraphQL API for %s's repositories.",
+        organisation,
+    )
     has_next_page = True
     cursor: Optional[str] = None
     data: Set[str] = set()
@@ -87,7 +106,7 @@ def get_repository_list(
         cursor_arg = f'after: "{cursor}"' if cursor else ""
         query = f"""
             {{
-                owner: repositoryOwner(login: "{owner}") {{
+                org: repositoryOwner(login: "{organisation}") {{
                     repositories(
                         first: 100
                         ownerAffiliations: OWNER
@@ -111,15 +130,16 @@ def get_repository_list(
 
         next_result = query_graphql(query=query, token=token)
 
-        data.update([r["name"] for r in next_result["owner"]["repositories"]["nodes"]])
-        has_next_page = next_result["owner"]["repositories"]["pageInfo"]["hasNextPage"]
-        cursor = next_result["owner"]["repositories"]["pageInfo"]["endCursor"]
+        # extract data from the result
+        data.update([r["name"] for r in next_result["org"]["repositories"]["nodes"]])
+        has_next_page = next_result["org"]["repositories"]["pageInfo"]["hasNextPage"]
+        cursor = next_result["org"]["repositories"]["pageInfo"]["endCursor"]
 
     return list(data)
 
 
 def get_issue_list(
-    owner: str,
+    organisation: str,
     repository: str,
     token: str,
 ) -> List[Issue]:
@@ -128,7 +148,7 @@ def get_issue_list(
 
     Parameters
     ----------
-    owner : str
+    organisation : str
     repository : str
     token : str
 
@@ -138,8 +158,11 @@ def get_issue_list(
         The list of issues for the repository.
     """
     logger.debug(
-        "Querying GitHub GraphQL API for issues in repository %s/%s.", owner, repository
+        "Querying GitHub GraphQL API for issues in repository %s/%s.",
+        organisation,
+        repository,
     )
+
     has_next_page = True
     cursor: Optional[str] = None
     data: List[Issue] = []
@@ -149,7 +172,7 @@ def get_issue_list(
         cursor_arg = f'after: "{cursor}"' if cursor else ""
         query = f"""
             {{
-                repository(name:"{repository}", owner: "{owner}") {{
+                repository(name:"{repository}", owner: "{organisation}") {{
                     issues(
                         first: 50
                         states: OPEN
@@ -161,6 +184,11 @@ def get_issue_list(
                             bodyText
                             createdAt
                             lastEditedAt
+                            updatedAt
+
+                            author {{
+                                login
+                            }}
 
                             assignees(
                                 first: 10
@@ -195,22 +223,24 @@ def get_issue_list(
 
         next_result = query_graphql(query=query, token=token)
 
+        # extract data from the result
         for issue in next_result["repository"]["issues"]["nodes"]:
             data.append(
                 Issue(
-                    owner=owner,
+                    organisation=organisation,
                     repository=repository,
                     number=issue["number"],
                     title=issue["title"],
+                    author=issue["author"]["login"],
                     body=issue["bodyText"],
-                    created=issue["createdAt"],
-                    edited=issue["lastEditedAt"],
+                    created=_parse_datetime(issue["createdAt"]),
+                    updated=_parse_datetime(issue["updatedAt"]),
                     assignees=[_a["login"] for _a in issue["assignees"]["nodes"]],
                     comments=[
                         IssueComment(
                             author=_c["author"]["login"],
                             body=_c["body"],
-                            updated=_c["updatedAt"],
+                            updated=_parse_datetime(_c["updatedAt"]),
                         )
                         for _c in issue["comments"]["nodes"]
                     ],

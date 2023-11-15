@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["github_issue_prompter"]
+
+[project]
+name = "github_issue_prompter"
+version = "0.0.1"
+description = "A python utility to find and prompt stale GitHub issues that may be available to work on."
+readme = "README.md"
+authors = [{ name = "Lukas Twist", email = "itsluketwist@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["github", "issue", "prompter", "openai"]
+dependencies = [
+    "requests",
+    "openai",
+]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "pytest",
+]
+
+[project.scripts]
+prompt = "github_issue_prompter.command:main"
+
+[project.urls]
+Homepage = "https://github.com/itsluketwist/github-issue-prompter"
