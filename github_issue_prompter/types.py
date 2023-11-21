@@ -24,6 +24,7 @@ class Status(_StrEnum):
     ACTIVE = "active"
     STALE = "stale"
     FREE = "free"
+    ERROR = "error"
 
 
 @dataclass

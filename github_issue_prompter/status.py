@@ -1,6 +1,15 @@
+import logging
+from dataclasses import asdict
 from datetime import datetime, timedelta
+from json import JSONDecodeError, loads
+from typing import Optional
+
+from openai import OpenAI
 
 from github_issue_prompter.types import Issue, IssueCheckMode, IssueStatus, Status
+
+
+logger = logging.getLogger(__name__)
 
 
 def check_issue_status(
@@ -104,5 +113,73 @@ def _check_simple(issue: Issue, **_) -> IssueStatus:
     return IssueStatus(status=Status.ACTIVE)
 
 
-def _check_ai(issue: Issue, openai_token: str, **_) -> IssueStatus:
-    raise NotImplementedError("Not done yet...")
+def _check_ai(
+    issue: Issue,
+    openai_token: str,
+    model: str = "gpt-3.5-turbo",
+    max_tokens: int = 256,
+    temperature: float = 0.7,
+    additional_prompt_text: Optional[str] = None,
+    **_,
+) -> IssueStatus:
+    client = OpenAI(api_key=openai_token)
+
+    prompt = f"""
+The following is a python dictionary representation of a GitHub issue
+(with it's 5 most recent comments) that I'd like to work on,
+but I'm not sure if someone else is already working on it!
+
+The issue: {asdict(issue)}
+
+Can you tell me if the issue looks active, if work on it has gone stale,
+or if it's free to work on?
+
+Provide a reason, and also a comment I can post on the issue to prompt
+any users I may need to in order to begin work on it.
+
+Give your response as a python dictionary, in the following example format,
+where issue_status is one of \"active\", \"stale\" or \"free\":
+{{
+    \"status\": issue_status,
+    \"reason\": \"This is a reason for why the issue is in the current status.\",
+    \"comment\": 'This is a comment to post on the issue.\",
+}}
+
+{additional_prompt_text or ""}
+"""
+
+    response = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        n=1,
+    )
+    response_json_str = response.choices[0].message.content
+
+    try:
+        response_dict = loads(response_json_str)  # parse the returned json string
+    except JSONDecodeError as error:
+        logger.error(
+            "Hit an error decoding the json string returned by the OpenAI API. "
+            "Response string: %s. Error: %s.",
+            response_json_str,
+            error,
+        )
+        return IssueStatus(status=Status.ERROR)
+
+    try:
+        return IssueStatus(**response_dict)  # return response object
+    except TypeError as error:
+        logger.error(
+            "Hit an error building IssueStatus from dictionary returned by the OpenAI API. "
+            "Response dictionary: %s. Error: %s.",
+            response_dict,
+            error,
+        )
+        return IssueStatus(status=Status.ERROR)

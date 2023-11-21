@@ -2,10 +2,7 @@ import logging
 import os
 from typing import Optional
 
-from github_issue_prompter.constants import (
-    PROMPTER_GITHUB_TOKEN,
-    PROMPTER_OPENAPI_TOKEN,
-)
+from github_issue_prompter.constants import PROMPTER_GITHUB_TOKEN, PROMPTER_OPENAI_TOKEN
 from github_issue_prompter.github_gql import get_issue_list, get_repository_list
 from github_issue_prompter.github_rest import comment_on_github_issue
 from github_issue_prompter.status import IssueCheckMode, check_issue_status
@@ -57,11 +54,11 @@ def prompt_issues(
             f"environment variable {PROMPTER_GITHUB_TOKEN}."
         )
 
-    _openai_token = openai_token or os.getenv(PROMPTER_OPENAPI_TOKEN)
+    _openai_token = openai_token or os.getenv(PROMPTER_OPENAI_TOKEN)
     if _openai_token is None and mode == IssueCheckMode.AI:
         raise ValueError(
             "An OpenAI API key must be passed in or assigned to environment variable "
-            f"{PROMPTER_OPENAPI_TOKEN} when {IssueCheckMode.AI} mode is selected."
+            f"{PROMPTER_OPENAI_TOKEN} when {IssueCheckMode.AI} mode is selected."
         )
 
     if prompt_count <= 0:
@@ -131,6 +128,11 @@ def prompt_issues(
 
             case Status.ACTIVE:
                 logger.info("Issue %s is active.", issue)
+
+            case Status.ERROR:
+                logger.info(
+                    "There was an error determining the status of issue %s.", issue
+                )
 
             case _:
                 raise NotImplementedError(

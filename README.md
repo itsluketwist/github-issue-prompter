@@ -17,7 +17,6 @@ A python utility to find and prompt stale GitHub issues that may be available to
 
 ## *todo*
 
-- implement openai/chat gpt check option
 - add/upload to pypi
 - add to docs (mainly usage)
 - prompt options, only stale, or available too..?

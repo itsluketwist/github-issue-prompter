@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 from github_issue_prompter.constants import (
     PROMPTER_GITHUB_TOKEN,
     PROMPTER_LOG_LEVEL,
-    PROMPTER_OPENAPI_TOKEN,
+    PROMPTER_OPENAI_TOKEN,
 )
 from github_issue_prompter.prompter import prompt_issues
 from github_issue_prompter.status import IssueCheckMode
@@ -51,7 +51,7 @@ parser.add_argument(
     type=str,
     default=None,
     help="The OpenAI API token to use (if mode is set to ai). "
-    f"If None will default to {PROMPTER_OPENAPI_TOKEN}.",
+    f"If None will default to {PROMPTER_OPENAI_TOKEN}.",
 )
 parser.add_argument(
     "-m",
