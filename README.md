@@ -1,11 +1,5 @@
 # *github-issue-prompter*
 
-It can be hard to sift through GitHub issues, especially when they seem to look busy or appear in limbo. 
-
-This python utility analyses GitHub issues, finding those that are free to work on (even if they look busy at a first 
-glance), and suggesting comments to prompt the issue if it seems stale, or offer your hand at solving it.
-Taking the stress out of sifting through issues yourself!
-
 ![check code workflow](https://github.com/itsluketwist/github-issue-prompter/actions/workflows/check.yaml/badge.svg)
 
 <div>
@@ -24,6 +18,13 @@ Taking the stress out of sifting through issues yourself!
         <img alt="GitHub GraphQL API" src="https://img.shields.io/badge/GitHub_GraphQL_API-181717?style=for-the-badge&logo=github&logoColor=white" />
     </a>
 </div>
+
+## *about*
+
+It can be hard to sift through GitHub issues, especially when they seem to look busy or appear in limbo. 
+This python utility analyses GitHub issues, finding those that are free to work on (even if they look busy at a first 
+glance), and suggests comments to prompt the issue if it seems stale, or to offer your hand at solving it.
+Taking the stress out of sifting through issues yourself!
 
 ## *installation*
 
