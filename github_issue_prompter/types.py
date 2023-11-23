@@ -20,6 +20,13 @@ class IssueCheckMode(_StrEnum):
     AI = "ai"
 
 
+class PostCommentsOptions(_StrEnum):
+    NONE = "none"
+    STALE = "stale"
+    FREE = "free"
+    ALL = "all"
+
+
 class Status(_StrEnum):
     ACTIVE = "active"
     STALE = "stale"

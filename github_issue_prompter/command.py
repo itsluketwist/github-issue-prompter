@@ -8,7 +8,7 @@ from github_issue_prompter.constants import (
     PROMPTER_OPENAI_TOKEN,
 )
 from github_issue_prompter.prompter import prompt_issues
-from github_issue_prompter.status import IssueCheckMode
+from github_issue_prompter.types import IssueCheckMode, PostCommentsOptions
 
 
 # some basic config for logging to the terminal
@@ -71,9 +71,11 @@ parser.add_argument(
 parser.add_argument(
     "-p",
     "--post-comments",
-    action="store_true",
+    type=PostCommentsOptions,
+    choices=list(PostCommentsOptions),
+    default=PostCommentsOptions.NONE,
     help="Whether to actually post the comments to the GitHub "
-    "issues, or to simply print them to the terminal.",
+    "issues, and which found issue's to comment on.",
 )
 parser.add_argument(
     "-a",

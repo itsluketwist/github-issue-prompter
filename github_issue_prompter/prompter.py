@@ -5,8 +5,8 @@ from typing import Optional
 from github_issue_prompter.constants import PROMPTER_GITHUB_TOKEN, PROMPTER_OPENAI_TOKEN
 from github_issue_prompter.github_gql import get_issue_list, get_repository_list
 from github_issue_prompter.github_rest import comment_on_github_issue
-from github_issue_prompter.status import IssueCheckMode, check_issue_status
-from github_issue_prompter.types import Status
+from github_issue_prompter.status import check_issue_status
+from github_issue_prompter.types import IssueCheckMode, PostCommentsOptions, Status
 
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ def prompt_issues(
     token: Optional[str] = None,
     mode: IssueCheckMode = IssueCheckMode.SIMPLE,
     prompt_count: int = 5,
-    post_comments: bool = False,
+    post_comments: PostCommentsOptions = PostCommentsOptions.NONE,
     only_assigned: bool = False,
     openai_token: Optional[str] = None,
 ) -> None:
@@ -32,7 +32,7 @@ def prompt_issues(
     token : Optional[str] = None
     mode : IssueCheckMode = IssueCheckMode.SIMPLE
     prompt_count : int = 5
-    post_comments : bool = False
+    post_comments : PostCommentsOptions = PostCommentsOptions.NONE
     only_assigned : bool = False
     openai_token : Optional[str] = None
     """
@@ -109,7 +109,18 @@ def prompt_issues(
         match _status.status:
             case Status.STALE | Status.FREE:
                 posted = False
-                if post_comments and _status.comment is not None:
+
+                if _status.comment is not None and (
+                    post_comments == PostCommentsOptions.ALL
+                    or (
+                        post_comments == PostCommentsOptions.FREE
+                        and _status.status == Status.FREE
+                    )
+                    or (
+                        post_comments == PostCommentsOptions.STALE
+                        and _status.status == Status.STALE
+                    )
+                ):
                     posted = comment_on_github_issue(
                         issue=issue,
                         comment=_status.comment,

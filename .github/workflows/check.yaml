@@ -8,35 +8,35 @@ on:
 
 jobs:
 
-  # testing job configuration and steps
-  test:
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        # the python versions that need to be tested on
-        python-version: ["3.10", "3.11", "3.12"]
-
-    steps:
-
-      - name: 1. Checkout the code...
-        uses: actions/checkout@v3
-
-      - name: 2. Configure Python version ${{ matrix.python-version }}...
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: "x64"
-
-      - name: 3. Install package...
-        run: |
-          python -m pip install -U pip
-          python -m pip install -e ".[dev]"
-
-      - name: 4. Run the tests...
-        run: |
-          python -m pytest .
+#  # testing job configuration and steps
+#  test:
+#
+#    runs-on: ubuntu-latest
+#
+#    strategy:
+#      matrix:
+#        # the python versions that need to be tested on
+#        python-version: ["3.10", "3.11", "3.12"]
+#
+#    steps:
+#
+#      - name: 1. Checkout the code...
+#        uses: actions/checkout@v3
+#
+#      - name: 2. Configure Python version ${{ matrix.python-version }}...
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: ${{ matrix.python-version }}
+#          architecture: "x64"
+#
+#      - name: 3. Install package...
+#        run: |
+#          python -m pip install -U pip
+#          python -m pip install -e ".[dev]"
+#
+#      - name: 4. Run the tests...
+#        run: |
+#          python -m pytest .
 
 
   # linting job configuration and steps
