@@ -7,7 +7,7 @@ packages = ["github_issue_prompter"]
 
 [project]
 name = "github_issue_prompter"
-version = "0.0.1"
+version = "0.0.2"
 description = "A python utility to find and prompt stale GitHub issues that may be available to work on."
 readme = "README.md"
 authors = [{ name = "Lukas Twist", email = "itsluketwist@gmail.com" }]
@@ -19,8 +19,8 @@ classifiers = [
 ]
 keywords = ["github", "issue", "prompter", "openai"]
 dependencies = [
-    "requests",
-    "openai",
+    "requests ~= 2.31.0",
+    "openai ~= 1.7.1",
 ]
 requires-python = ">=3.10"
 

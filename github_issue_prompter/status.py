@@ -2,7 +2,6 @@ import logging
 from dataclasses import asdict
 from datetime import datetime, timedelta
 from json import JSONDecodeError, loads
-from typing import Optional
 
 from openai import OpenAI
 
@@ -119,7 +118,7 @@ def _check_ai(
     model: str = "gpt-3.5-turbo",
     max_tokens: int = 256,
     temperature: float = 0.7,
-    additional_prompt_text: Optional[str] = None,
+    additional_prompt_text: str | None = None,
     **_,
 ) -> IssueStatus:
     client = OpenAI(api_key=openai_token)

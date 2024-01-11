@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import requests
 
@@ -33,7 +33,7 @@ def query_graphql(
     query: str,
     token: str,
     timeout: int = 5,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Perform a GitHub GraphQL query, handling any errors and returning the result.
 
@@ -45,7 +45,7 @@ def query_graphql(
 
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         The queried data.
     """
     logger.debug("Querying GitHub GraphQL: %s", query)
@@ -79,7 +79,7 @@ def query_graphql(
 def get_repository_list(
     organisation: str,
     token: str,
-) -> List[str]:
+) -> list[str]:
     """
     Query a list of repositories for a given GitHub user/organisation (the owner).
 
@@ -90,7 +90,7 @@ def get_repository_list(
 
     Returns
     -------
-    List[str]
+    list[str]
         The list of owned repositories.
     """
     logger.debug(
@@ -98,8 +98,8 @@ def get_repository_list(
         organisation,
     )
     has_next_page = True
-    cursor: Optional[str] = None
-    data: Set[str] = set()
+    cursor: str | None = None
+    data: set[str] = set()
 
     while has_next_page:
         # build the query
@@ -142,7 +142,7 @@ def get_issue_list(
     organisation: str,
     repository: str,
     token: str,
-) -> List[Issue]:
+) -> list[Issue]:
     """
     Query a list of issues for a given GitHub repository.
 
@@ -154,7 +154,7 @@ def get_issue_list(
 
     Returns
     -------
-    List[Issue]
+    list[Issue]
         The list of issues for the repository.
     """
     logger.debug(
@@ -164,8 +164,8 @@ def get_issue_list(
     )
 
     has_next_page = True
-    cursor: Optional[str] = None
-    data: List[Issue] = []
+    cursor: str | None = None
+    data: list[Issue] = []
 
     while has_next_page:
         # build the query

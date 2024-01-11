@@ -1,6 +1,5 @@
 import logging
 import os
-from typing import Optional
 
 from github_issue_prompter.constants import PROMPTER_GITHUB_TOKEN, PROMPTER_OPENAI_TOKEN
 from github_issue_prompter.github_gql import get_issue_list, get_repository_list
@@ -14,13 +13,13 @@ logger = logging.getLogger(__name__)
 
 def prompt_issues(
     organisation: str,
-    repository: Optional[str] = None,
-    token: Optional[str] = None,
+    repository: str | None = None,
+    token: str | None = None,
     mode: IssueCheckMode = IssueCheckMode.SIMPLE,
     prompt_count: int = 5,
     post_comments: PostCommentsOptions = PostCommentsOptions.NONE,
     only_assigned: bool = False,
-    openai_token: Optional[str] = None,
+    openai_token: str | None = None,
 ) -> None:
     """
     Query and check issue's for any that need prompting or are available to be worked on.
@@ -28,13 +27,13 @@ def prompt_issues(
     Parameters
     ----------
     organisation : str
-    repository : Optional[str] = None
-    token : Optional[str] = None
+    repository : str | None = None
+    token : str | None = None
     mode : IssueCheckMode = IssueCheckMode.SIMPLE
     prompt_count : int = 5
     post_comments : PostCommentsOptions = PostCommentsOptions.NONE
     only_assigned : bool = False
-    openai_token : Optional[str] = None
+    openai_token : str | None = None
     """
     logger.info(
         "Prompting issues for %s%s (mode: %s, prompt_count: %s, "

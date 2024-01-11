@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
 
 
 class _StrEnum(Enum):
@@ -39,8 +38,8 @@ class IssueStatus:
     """Class to store information about the current status of an issue."""
 
     status: Status
-    reason: Optional[str] = None
-    comment: Optional[str] = None
+    reason: str | None = None
+    comment: str | None = None
 
 
 @dataclass
@@ -64,8 +63,8 @@ class Issue:
     body: str
     created: datetime
     updated: datetime
-    assignees: List[str]
-    comments: List[IssueComment]
+    assignees: list[str]
+    comments: list[IssueComment]
 
     def __repr__(self) -> str:
         # matches the url part of an issue
