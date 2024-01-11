@@ -52,7 +52,7 @@ def _check_simple(issue: Issue, **_) -> IssueStatus:
 
     Parameters
     ----------
-    issue
+    issue: Issue
         Object detailing all necessary issue information to check its status.
     **_
         Unused kwargs.
@@ -114,15 +114,38 @@ def _check_simple(issue: Issue, **_) -> IssueStatus:
 
 def _check_ai(
     issue: Issue,
-    openai_token: str,
+    client: OpenAI,
     model: str = "gpt-3.5-turbo",
     max_tokens: int = 256,
     temperature: float = 0.7,
     additional_prompt_text: str | None = None,
     **_,
 ) -> IssueStatus:
-    client = OpenAI(api_key=openai_token)
+    """
 
+    Parameters
+    ----------
+    issue: Issue
+        Object detailing all necessary issue information to check its status.
+    client: OpenAI
+        An initialised OpenAI API client.
+    model: str = "gpt-3.5-turbo"
+        What model to use when querying the API.
+    max_tokens: int = 256
+        The maximum amount of tokens to be used when querying the API.
+    temperature: float = 0.7
+        The temperature to be used when querying the API.
+    additional_prompt_text: str | None = None
+        Any additional text to be included in the prompt, to fine-tune the response.
+    **_
+        Unused kwargs.
+
+    Returns
+    -------
+    IssueStatus
+        An object detailing the current status of the issue, along with a reason
+        and a comment that can be used to prompt the issue.
+    """
     prompt = f"""
 The following is a python dictionary representation of a GitHub issue
 (with it's 5 most recent comments) that I'd like to work on,

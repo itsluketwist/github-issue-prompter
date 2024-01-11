@@ -1,6 +1,8 @@
 import logging
 import os
 
+from openai import OpenAI
+
 from github_issue_prompter.constants import PROMPTER_GITHUB_TOKEN, PROMPTER_OPENAI_TOKEN
 from github_issue_prompter.github_gql import get_issue_list, get_repository_list
 from github_issue_prompter.github_rest import comment_on_github_issue
@@ -20,6 +22,7 @@ def prompt_issues(
     post_comments: PostCommentsOptions = PostCommentsOptions.NONE,
     only_assigned: bool = False,
     openai_token: str | None = None,
+    **kwargs,
 ) -> None:
     """
     Query and check issue's for any that need prompting or are available to be worked on.
@@ -34,6 +37,7 @@ def prompt_issues(
     post_comments : PostCommentsOptions = PostCommentsOptions.NONE
     only_assigned : bool = False
     openai_token : str | None = None
+    **kwargs
     """
     logger.info(
         "Prompting issues for %s%s (mode: %s, prompt_count: %s, "
@@ -59,6 +63,10 @@ def prompt_issues(
             "An OpenAI API key must be passed in or assigned to environment variable "
             f"{PROMPTER_OPENAI_TOKEN} when {IssueCheckMode.AI} mode is selected."
         )
+    elif _openai_token:
+        _status_client = OpenAI(api_key=_openai_token)
+    else:
+        _status_client = None
 
     if prompt_count <= 0:
         raise ValueError(
@@ -101,7 +109,8 @@ def prompt_issues(
         _status = check_issue_status(
             mode=mode,
             issue=issue,
-            openai_token=_openai_token,
+            client=_status_client,
+            **kwargs,
         )
 
         # process issue depending on it's status
