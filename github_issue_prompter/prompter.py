@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 def prompt_issues(
     organisation: str,
     repository: str | None = None,
-    token: str | None = None,
-    mode: IssueCheckMode = IssueCheckMode.SIMPLE,
+    github_token: str | None = None,
+    mode: IssueCheckMode | str = IssueCheckMode.AI,
     prompt_count: int = 5,
     post_comments: PostCommentsOptions = PostCommentsOptions.NONE,
     only_assigned: bool = False,
@@ -31,8 +31,8 @@ def prompt_issues(
     ----------
     organisation : str
     repository : str | None = None
-    token : str | None = None
-    mode : IssueCheckMode = IssueCheckMode.SIMPLE
+    github_token : str | None = None
+    mode : IssueCheckMode = IssueCheckMode.AI
     prompt_count : int = 5
     post_comments : PostCommentsOptions = PostCommentsOptions.NONE
     only_assigned : bool = False
@@ -50,8 +50,10 @@ def prompt_issues(
         only_assigned,
     )
 
-    _token = token or os.getenv(PROMPTER_GITHUB_TOKEN)
-    if _token is None:
+    mode = IssueCheckMode(mode)
+
+    _github_token = github_token or os.getenv(PROMPTER_GITHUB_TOKEN)
+    if _github_token is None:
         raise ValueError(
             "A GitHub API key must be passed in or assigned to "
             f"environment variable {PROMPTER_GITHUB_TOKEN}."
@@ -75,7 +77,7 @@ def prompt_issues(
 
     if not repository:
         # query repositories in the given org
-        repos = get_repository_list(organisation=organisation, token=_token)
+        repos = get_repository_list(organisation=organisation, token=_github_token)
         logger.info(
             "Queried %s repositories from %s: %s",
             len(repos),
@@ -92,7 +94,7 @@ def prompt_issues(
             get_issue_list(
                 organisation=organisation,
                 repository=repo,
-                token=_token,
+                token=_github_token,
             )
         )
 
@@ -132,7 +134,7 @@ def prompt_issues(
                     posted = comment_on_github_issue(
                         issue=issue,
                         comment=_status.comment,
-                        token=_token,
+                        token=_github_token,
                     )
 
                 issues_processed += 1

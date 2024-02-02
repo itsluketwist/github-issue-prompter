@@ -7,7 +7,7 @@ packages = ["github_issue_prompter"]
 
 [project]
 name = "github_issue_prompter"
-version = "0.0.2"
+version = "0.0.3"
 description = "A python utility to find and prompt stale GitHub issues that may be available to work on."
 readme = "README.md"
 authors = [{ name = "Lukas Twist", email = "itsluketwist@gmail.com" }]

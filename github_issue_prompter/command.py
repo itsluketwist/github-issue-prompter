@@ -38,28 +38,26 @@ parser.add_argument(
     help="The repository to prompt, if None will prompt all repositories under the given owner.",
 )
 parser.add_argument(
-    "-t",
-    "--token",
+    "-g",
+    "--github-github_token",
     type=str,
     default=None,
-    help="The GitHub API token to use when querying or making comments. "
+    help="The GitHub API github_token to use when querying or making comments. "
     f"If None will default to {PROMPTER_GITHUB_TOKEN}.",
 )
 parser.add_argument(
     "-o",
-    "--openai-token",
+    "--openai-github_token",
     type=str,
     default=None,
-    help="The OpenAI API token to use (if mode is set to ai). "
+    help="The OpenAI API github_token to use (if mode is set to ai). "
     f"If None will default to {PROMPTER_OPENAI_TOKEN}.",
 )
 parser.add_argument(
-    "-m",
-    "--mode",
-    type=IssueCheckMode,
-    choices=list(IssueCheckMode),
-    default=IssueCheckMode.SIMPLE,
-    help="How to determine if an issue is stale.",
+    "-s",
+    "--simple",
+    action="store_true",
+    help="Simple issue check mode, for testing or if you don't have access to the OpenAI API.",
 )
 parser.add_argument(
     "-c",
@@ -89,4 +87,8 @@ def main():
     """Check and prompt some issues!"""
     args = parser.parse_args()
     kwargs = vars(args)
+
+    simple = kwargs.pop("simple")
+    kwargs["mode"] = IssueCheckMode.SIMPLE if simple else IssueCheckMode.AI
+
     prompt_issues(**kwargs)
