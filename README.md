@@ -3,6 +3,7 @@
 Use AI to find GitHub issue's that you can work on (even if the issue's appear active)!
 
 ![check code workflow](https://github.com/itsluketwist/github-issue-prompter/actions/workflows/check.yaml/badge.svg)
+![release workflow](https://github.com/itsluketwist/github-issue-prompter/actions/workflows/release.yaml/badge.svg)
 
 <div>
     <!-- badges from : https://shields.io/ -->
@@ -11,7 +12,7 @@ Use AI to find GitHub issue's that you can work on (even if the issue's appear a
         <img alt="MIT License" src="https://img.shields.io/badge/Licence-MIT-C10606?style=for-the-badge&logo=docs&logoColor=white" />
     </a>
     <a href="https://www.python.org/">
-        <img alt="Python 3" src="https://img.shields.io/badge/Python_3-37709F?style=for-the-badge&logo=python&logoColor=white" />
+        <img alt="Python 3.10+" src="https://img.shields.io/badge/Python_3.10+-37709F?style=for-the-badge&logo=python&logoColor=white" />
     </a>
     <a href="https://openai.com/blog/openai-api">
         <img alt="OpenAI API" src="https://img.shields.io/badge/OpenAI_API-412991?style=for-the-badge&logo=openai&logoColor=white" />
@@ -30,10 +31,10 @@ your hand at solving it. Taking the stress out of sifting through issues yoursel
 
 ## *installation*
 
-Install directly from GitHub, using pip:
+Install directly from PyPI using pip:
 
 ```shell
-pip install git+https://github.com/itsluketwist/github-issue-prompter
+pip install github-issue-prompter
 ```
 
 ## *tokens*
@@ -79,7 +80,7 @@ command line argument, or the `mode="simple"` keyword argument.
 
 ## *development*
 
-Clone the repository code:
+Fork and clone the repository code:
 
 ```shell
 git clone https://github.com/itsluketwist/github-issue-prompter.git
@@ -100,6 +101,8 @@ Install and use pre-commit to ensure code is in a good state:
 ```shell
 pre-commit install
 
+pre-commit autoupdate
+
 pre-commit run --all-files
 ```
 
@@ -113,19 +116,15 @@ pytest .
 ```
 
 
-## *release*
-
-(todo...) We release to pypi...
-
-
 ## *inspiration*
 
-When starting to get into open source, I found that quite a lot of issues where in uncertain states. 
-Either assigned but seemingly inactive, or maybe unassigned but with comments implying someone might be working on it. 
-This sometimes made it hard to find suitable issue's to get started on, and I figured it would be convenient to have 
-an automatic tool to scan for these issue's and prompt the assignees/maintainers to clear up the status.
+When getting into open source, I found that plenty of issues where in uncertain states. Either assigned but seemingly 
+inactive, or unassigned but with comments implying someone might be working on it. This made it hard to find suitable 
+issue's to get started on, and I figured it would be convenient to have an automatic tool to scan for these issue's 
+and prompt the assignees/maintainers to clear up the status.
 
 ## *todo*
 
-- add/upload to pypi
 - implement some tests
+- expand use-cases and instructions above
+- all api prompt config/options

@@ -1,14 +1,17 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools-git-versioning"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools-git-versioning]
+enabled = true
 
 [tool.setuptools]
 packages = ["github_issue_prompter"]
 
 [project]
 name = "github_issue_prompter"
-version = "0.0.3"
-description = "A python utility to find and prompt stale GitHub issues that may be available to work on."
+dynamic = ["version"]
+description = "Use AI to find GitHub issue's that you can work on (even if the issue's appear active)!"
 readme = "README.md"
 authors = [{ name = "Lukas Twist", email = "itsluketwist@gmail.com" }]
 license = { file = "LICENSE" }
@@ -35,3 +38,5 @@ prompt = "github_issue_prompter.command:main"
 
 [project.urls]
 Homepage = "https://github.com/itsluketwist/github-issue-prompter"
+Code = "https://github.com/itsluketwist/github-issue-prompter"
+Download = "https://github.com/itsluketwist/github-issue-prompter/tags"
